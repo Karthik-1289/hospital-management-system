@@ -1,72 +1,45 @@
-import React, { useState , useEffect } from 'react';
-import {  useNavigate  } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import HeadComp from './Component/HeadComp';
-import axios from 'axios'
 
 const Admin = () => {
-const navigate = useNavigate()
+    const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+        username: '',
+        admin_id: '',
+        password: '',
+    });
 
-// const [doctorData,setDoctorData]=useState({
-//   admin_id:"",
-//   username:"",
-//   password:""
-// })
+    const { username, admin_id, password } = formData;
 
-// const handleChange = (e) =>{
-//   const { name , value } = e.target;
-//   setDoctorData(prevState =>({
-//     ...prevState,
-//     [name]:value
-//   }));
-// };
-
-// const handleSubmit = async(e)=>{
-//   e.preventDefault();
-//   try{
-//     const response = await axios.get('http://localhost:8000/admind/', doctorData);
-//     console.log('Data submitted:',response.data);
-//     navigate('/home');
-//   }catch(error){
-//     console.error('Error submitting Admin data:',error);
-
-//   }
-// };
-const [data, setData] = useState([]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get('http://localhost:8000/doctor/');
-                setData(response.data);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-        fetchData();
-    }, []);
-
-    const [doctorData,setDoctorData]=useState({
-      admin_id:"",
-      username:"",
-      password:""
-    })
-    const handleChange = (e) =>{
-      const { name , value } = e.target;
-      setDoctorData(prevState =>({
-        ...prevState,
-        [name]:value
-      }));
+    // Function to update form data when inputs change
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
-    const handleSubmit = async (admin_id) => {
-      try {
-        await axios.delete(`http://localhost:8000/admind/${admin_id}/`);
-        setData(data.filter(item => item.admin_id !== admin_id)); 
-        
-      }catch (error) {
-        console.error('Error data:', error);
-    }
-  };
 
+    // Function to handle form submission
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            // Send login credentials to the backend for authentication
+            const response = await axios.post('http://localhost:8000/admind/', formData);
+
+            if (response.status === 200) {
+                // Authentication successful
+                console.response('Error logging in:', response);
+            alert('Error logging in. Please try again.');
+               // Redirect to user page after successful login
+            } 
+        } catch (error) {
+          console.log('Login successful:',error);
+          alert('Login successful!');
+          navigate('/home'); 
+        }
+    };
+
+ 
   return (
     <div>
         <HeadComp/>
@@ -74,11 +47,11 @@ const [data, setData] = useState([]);
 <form  onSubmit={handleSubmit} style={{display:'flex',flexDirection:'column',justifyContent:'center',marginLeft:'22%',marginRight:'10%'}}>
  <label><h1 style={{textAlign:'center'}}>Admin Sign Up </h1></label>
  <label>Admin ID </label>
- <input value={FormData.admin_id} onChange={handleChange} name="admin_id" placeholder='Enter User ID' /><br/>
+ <input value={admin_id} onChange={handleChange} name="admin_id" placeholder='Enter User ID' /><br/>
   <label>Username </label>
-  <input value={FormData.username} name="username" onChange={handleChange} placeholder='Enter Username' /><br/>
+  <input value={username} name="username" onChange={handleChange} placeholder='Enter Username' /><br/>
   <label>Password </label>
-  <input value={FormData.password}  name="password" onChange={handleChange}  placeholder='Enter Password' /><br/>
+  <input value={password}  name="password" onChange={handleChange}  placeholder='Enter Password' /><br/>
   <section><button  type='submit'>Submit</button>
   </section>
 
